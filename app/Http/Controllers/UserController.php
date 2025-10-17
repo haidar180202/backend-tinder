@@ -7,6 +7,19 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/users/recommended",
+     *     summary="Get recommended users",
+     *     tags={"Users"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/User"))
+     *     )
+     * )
+     */
     public function getRecommendedUsers(Request $request)
     {
         $user = $request->user();
@@ -15,6 +28,16 @@ class UserController extends Controller
         return response()->json($users);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/users/{id}/like",
+     *     summary="Like a user",
+     *     tags={"Users"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Successful operation")
+     * )
+     */
     public function likeUser(Request $request, $id)
     {
         $user = $request->user();
@@ -27,6 +50,16 @@ class UserController extends Controller
         return response()->json($like);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/users/{id}/dislike",
+     *     summary="Dislike a user",
+     *     tags={"Users"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Successful operation")
+     * )
+     */
     public function dislikeUser(Request $request, $id)
     {
         $user = $request->user();
@@ -39,6 +72,19 @@ class UserController extends Controller
         return response()->json($dislike);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/users/liked",
+     *     summary="Get liked users",
+     *     tags={"Users"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/User"))
+     *     )
+     * )
+     */
     public function getLikedUsers(Request $request)
     {
         $user = $request->user();
