@@ -223,4 +223,24 @@ class UserController extends Controller
 
         return response()->json($picture);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/profile",
+     *     summary="Get user profile",
+     *     tags={"Profile"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/User")
+     *     )
+     * )
+     */
+    public function getProfile(Request $request)
+    {
+        $user = $request->user()->load(['profile', 'pictures']);
+
+        return response()->json($user);
+    }
 }

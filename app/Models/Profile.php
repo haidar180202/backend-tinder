@@ -32,13 +32,6 @@ class Profile extends Model
         'profile_picture',
     ];
 
-    protected function age(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => Carbon::parse($this->attributes['birth_date'])->age,
-        );
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);
