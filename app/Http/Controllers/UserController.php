@@ -30,54 +30,46 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/users/{id}/like",
-     *     summary="Like a user",
+     *     path="/api/users/{id}/action",
+     *     summary="Like or dislike a user",
      *     tags={"Users"},
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="name", in="header", required=true, @OA\Schema(type="string", enum={"like", "dislike"})),
      *     @OA\Response(response=200, description="Successful operation")
      * )
      */
-    public function likeUser(Request $request, $id)
+    public function userAction(Request $request, $id)
     {
         $user = $request->user();
-        $likedUser = User::findOrFail($id);
+        $action = $request->header('name');
 
-        $like = $user->likes()->create([
-            'liked_user_id' => $likedUser->id,
-        ]);
+        if ($user->id == $id) {
+            return response()->json(['message' => 'You cannot perform this action on yourself.'], 422);
+        }
 
-        return response()->json($like);
-    }
+        if (!User::where('id', $id)->exists()) {
+            return response()->json(['message' => 'The user you are trying to interact with does not exist.'], 404);
+        }
 
-    /**
-     * @OA\Post(
-     *     path="/api/users/{id}/dislike",
-     *     summary="Dislike a user",
-     *     tags={"Users"},
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
-     *     @OA\Response(response=200, description="Successful operation")
-     * )
-     */
-    public function dislikeUser(Request $request, $id)
-    {
-        $user = $request->user();
-        $dislikedUser = User::findOrFail($id);
+        if ($action === 'like') {
+            $user->likes()->firstOrCreate(['liked_user_id' => $id]);
+        } elseif ($action === 'dislike') {
+            $user->dislikes()->firstOrCreate(['disliked_user_id' => $id]);
+        } else {
+            return response()->json(['message' => 'Invalid action specified.'], 400);
+        }
 
-        $dislike = $user->dislikes()->create([
-            'disliked_user_id' => $dislikedUser->id,
-        ]);
-
-        return response()->json($dislike);
+        return response()->json(['message' => 'Action recorded successfully.'], 200);
     }
 
     /**
      * @OA\Get(
-     *     path="/api/users/liked",
-     *     summary="Get liked users",
+     *     path="/api/users/mycategories",
+     *     summary="Get user data by category",
      *     tags={"Users"},
      *     security={{"sanctum":{}}},
+     *     @OA\Parameter(name="name", in="header", required=true, @OA\Schema(type="string", enum={"liked", "disliked"})),
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
@@ -85,11 +77,38 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function getLikedUsers(Request $request)
+    public function getMyDataByCategory(Request $request)
     {
         $user = $request->user();
-        $likedUsers = $user->likes()->with(['likedUser.profile', 'likedUser.pictures'])->paginate(10);
+        $category = $request->header('name');
 
-        return response()->json($likedUsers);
+        if ($category === 'liked') {
+            $data = $user->likes()->with(['likedUser.profile', 'likedUser.pictures'])->paginate(10);
+        } elseif ($category === 'disliked') {
+            $data = $user->dislikes()->with(['dislikedUser.profile', 'dislikedUser.pictures'])->paginate(10);
+        } else {
+            return response()->json(['message' => 'Invalid category'], 400);
+        }
+
+        return response()->json($data);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validatedData = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'bio' => 'sometimes|string',
+            'location' => 'sometimes|string|max:255',
+            'birth_date' => 'sometimes|date',
+        ]);
+
+        $profile = $user->profile()->updateOrCreate(
+            ['user_id' => $user->id],
+            $validatedData
+        );
+
+        return response()->json($profile);
     }
 }

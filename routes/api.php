@@ -14,7 +14,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/users/recommended', [UserController::class, 'getRecommendedUsers']);
-    Route::post('/users/{id}/like', [UserController::class, 'likeUser']);
-    Route::post('/users/{id}/dislike', [UserController::class, 'dislikeUser']);
-    Route::get('/users/liked', [UserController::class, 'getLikedUsers']);
+    Route::post('/users/{id}/action', [UserController::class, 'userAction']);
+    Route::get('/users/mycategories', [UserController::class, 'getMyDataByCategory']);
+    Route::post('/profile', [UserController::class, 'updateProfile']);
 });

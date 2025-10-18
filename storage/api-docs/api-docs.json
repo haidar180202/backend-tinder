@@ -101,13 +101,13 @@
                 ]
             }
         },
-        "/api/users/{id}/like": {
+        "/api/users/{id}/action": {
             "post": {
                 "tags": [
                     "Users"
                 ],
-                "summary": "Like a user",
-                "operationId": "40f0b674ffe8ea190b54631525158224",
+                "summary": "Like or dislike a user",
+                "operationId": "6a9c8dcb481bc4a4f6beb9228a16028c",
                 "parameters": [
                     {
                         "name": "id",
@@ -115,6 +115,18 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "like",
+                                "dislike"
+                            ]
                         }
                     }
                 ],
@@ -130,42 +142,27 @@
                 ]
             }
         },
-        "/api/users/{id}/dislike": {
-            "post": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Dislike a user",
-                "operationId": "8f2ef9b5ff795b61fb310f88d1554ca4",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/users/liked": {
+        "/api/users/mycategories": {
             "get": {
                 "tags": [
                     "Users"
                 ],
-                "summary": "Get liked users",
-                "operationId": "84e2aa051d9fcc9c06f6a81479131d98",
+                "summary": "Get user data by category",
+                "operationId": "84043b60b3a8b24f0281ed74a9730f23",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "liked",
+                                "disliked"
+                            ]
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",

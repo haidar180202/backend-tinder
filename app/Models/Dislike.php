@@ -19,4 +19,9 @@ class Dislike extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function dislikedUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'disliked_user_id');
+    }
 }
