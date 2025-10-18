@@ -48,10 +48,6 @@ class UserController extends Controller
      */
     public function userAction(Request $request, $id)
     {
-        if (!$request->user()) {
-            return response()->json(['message' => 'Unauthenticated.'], 401);
-        }
-
         $user = $request->user();
         $action = $request->input('action');
 
