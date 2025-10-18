@@ -74,7 +74,7 @@ class UserController extends Controller
      *     summary="Get user data by category",
      *     tags={"Users"},
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="name", in="header", required=true, @OA\Schema(type="string", enum={"liked", "disliked"})),
+     *     @OA\Parameter(name="name", in="header", required=true, @OA\Schema(type="string", enum={"liked", "disliked", "liked_me"})),
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
@@ -91,6 +91,8 @@ class UserController extends Controller
             $data = $user->likes()->with(['likedUser.profile', 'likedUser.pictures'])->paginate(10);
         } elseif ($category === 'disliked') {
             $data = $user->dislikes()->with(['dislikedUser.profile', 'dislikedUser.pictures'])->paginate(10);
+        } elseif ($category === 'liked_me') {
+            $data = $user->likesReceived()->with(['user.profile', 'user.pictures'])->paginate(10);
         } else {
             return response()->json(['message' => 'Invalid category'], 400);
         }

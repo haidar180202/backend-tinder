@@ -163,7 +163,8 @@
                             "type": "string",
                             "enum": [
                                 "liked",
-                                "disliked"
+                                "disliked",
+                                "liked_me"
                             ]
                         }
                     }
