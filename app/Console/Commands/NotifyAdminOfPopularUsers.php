@@ -2,9 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\PopularUser;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class NotifyAdminOfPopularUsers extends Command
 {
@@ -30,8 +32,7 @@ class NotifyAdminOfPopularUsers extends Command
         $popularUsers = User::withCount('likesReceived')->having('likes_received_count', '>', 50)->get();
 
         foreach ($popularUsers as $user) {
-            Log::info("User {$user->name} has more than 50 likes!");
-            // Di sini Anda bisa menambahkan logika untuk mengirim email
+            Mail::to('admin@example.com')->send(new PopularUser($user));
         }
 
         $this->info('Checked for popular users.');

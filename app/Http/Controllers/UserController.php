@@ -24,7 +24,7 @@ class UserController extends Controller
     public function getRecommendedUsers(Request $request)
     {
         $user = $request->user();
-        $users = User::where('id', '!=', $user->id)->with(['profile', 'pictures'])->get();
+        $users = User::where('id', '!=', $user->id)->with(['profile', 'pictures'])->paginate(10);
 
         return response()->json($users);
     }
