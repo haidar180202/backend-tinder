@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -108,6 +109,24 @@ class UserController extends Controller
             ['user_id' => $user->id],
             $validatedData
         );
+
+        return response()->json($profile);
+    }
+
+    public function uploadProfilePicture(Request $request)
+    {
+        $request->validate([
+            'picture' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $user = $request->user();
+        $profile = $user->profile()->firstOrCreate(['user_id' => $user->id]);
+
+        if ($request->hasFile('picture')) {
+            $path = $request->file('picture')->store('public/profile_pictures');
+            $profile->profile_picture = Storage::url($path);
+            $profile->save();
+        }
 
         return response()->json($profile);
     }
