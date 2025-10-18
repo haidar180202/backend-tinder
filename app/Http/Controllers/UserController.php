@@ -130,4 +130,22 @@ class UserController extends Controller
 
         return response()->json($profile);
     }
+
+    public function uploadPicture(Request $request)
+    {
+        $request->validate([
+            'picture' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $user = $request->user();
+
+        if ($request->hasFile('picture')) {
+            $path = $request->file('picture')->store('public/user_pictures');
+            $picture = $user->pictures()->create([
+                'picture_url' => Storage::url($path),
+            ]);
+        }
+
+        return response()->json($picture);
+    }
 }

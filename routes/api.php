@@ -18,4 +18,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/mycategories', [UserController::class, 'getMyDataByCategory']);
     Route::post('/profile', [UserController::class, 'updateProfile']);
     Route::post('/profile/picture', [UserController::class, 'uploadProfilePicture']);
+    Route::post('/pictures', [UserController::class, 'uploadPicture']);
 });
