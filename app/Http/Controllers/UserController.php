@@ -94,6 +94,29 @@ class UserController extends Controller
         return response()->json($data);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/profile",
+     *     summary="Update user profile",
+     *     tags={"Profile"},
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="bio", type="string", example="I am a software engineer."),
+     *             @OA\Property(property="location", type="string", example="New York, USA"),
+     *             @OA\Property(property="birth_date", type="string", format="date", example="1990-01-01")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/Profile")
+     *     )
+     * )
+     */
     public function updateProfile(Request $request)
     {
         $user = $request->user();
@@ -113,6 +136,32 @@ class UserController extends Controller
         return response()->json($profile);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/profile/picture",
+     *     summary="Upload profile picture",
+     *     tags={"Profile"},
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="picture",
+     *                     type="string",
+     *                     format="binary"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/Profile")
+     *     )
+     * )
+     */
     public function uploadProfilePicture(Request $request)
     {
         $request->validate([
@@ -131,6 +180,32 @@ class UserController extends Controller
         return response()->json($profile);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/pictures",
+     *     summary="Upload additional picture",
+     *     tags={"Profile"},
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="picture",
+     *                     type="string",
+     *                     format="binary"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/UserPicture")
+     *     )
+     * )
+     */
     public function uploadPicture(Request $request)
     {
         $request->validate([
