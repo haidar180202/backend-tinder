@@ -243,10 +243,5 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function getProfile(Request $request)
-    {
-        $user = $request->user()->load(['profile', 'pictures']);
 
-        return response()->json($user);
-    }
 }
