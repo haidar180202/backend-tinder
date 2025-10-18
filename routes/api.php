@@ -14,7 +14,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/users/recommended', [UserController::class, 'getRecommendedUsers']);
-    Route::post('/users/{id}/action', [UserController::class, 'userAction']);
+    // TODO: This route should ideally be a POST request as it modifies data.
+    // Changed to GET to simplify testing directly from the browser.
+    Route::get('/users/{id}/action', [UserController::class, 'userAction']);
     Route::get('/users/mycategories', [UserController::class, 'getMyDataByCategory']);
     Route::post('/profile', [UserController::class, 'updateProfile']);
     Route::get('/profile', [UserController::class, 'getProfile']);

@@ -53,7 +53,7 @@ class UserController extends Controller
         }
 
         $user = $request->user();
-        $action = $request->input('action');
+        $action = $request->query('action');
 
         if ($user->id == $id) {
             return response()->json(['message' => 'You cannot perform this action on yourself.'], 422);
