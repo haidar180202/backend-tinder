@@ -36,14 +36,20 @@ class UserController extends Controller
      *     tags={"Users"},
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
-     *     @OA\Parameter(name="name", in="header", required=true, @OA\Schema(type="string", enum={"like", "dislike"})),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="action", type="string", enum={"like", "dislike"})
+     *         )
+     *     ),
      *     @OA\Response(response=200, description="Successful operation")
      * )
      */
     public function userAction(Request $request, $id)
     {
         $user = $request->user();
-        $action = $request->header('name');
+        $action = $request->input('action');
 
         if ($user->id == $id) {
             return response()->json(['message' => 'You cannot perform this action on yourself.'], 422);
