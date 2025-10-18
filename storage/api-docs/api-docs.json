@@ -95,12 +95,12 @@
             }
         },
         "/api/users/{id}/action": {
-            "post": {
+            "get": {
                 "tags": [
                     "Users"
                 ],
                 "summary": "Like or dislike a user",
-                "operationId": "6a9c8dcb481bc4a4f6beb9228a16028c",
+                "operationId": "330a349df0d43b204dc59d8552671c7c",
                 "parameters": [
                     {
                         "name": "id",
@@ -109,30 +109,35 @@
                         "schema": {
                             "type": "integer"
                         }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "action": {
-                                        "type": "string",
-                                        "enum": [
-                                            "like",
-                                            "dislike"
-                                        ]
-                                    }
-                                },
-                                "type": "object"
-                            }
+                    },
+                    {
+                        "name": "action",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "like",
+                                "dislike"
+                            ]
                         }
                     }
-                },
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid action specified"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "422": {
+                        "description": "Cannot perform action on yourself"
                     }
                 },
                 "security": [
@@ -186,30 +191,6 @@
             }
         },
         "/api/profile": {
-            "get": {
-                "tags": [
-                    "Profile"
-                ],
-                "summary": "Get user profile",
-                "operationId": "8e7ba77d4e8409460b341c9273099998",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/User"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            },
             "post": {
                 "tags": [
                     "Profile"

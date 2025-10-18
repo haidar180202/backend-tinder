@@ -30,20 +30,18 @@ class UserController extends Controller
     }
 
     /**
-     * @OA\Post(
+     * @OA\Get(
      *     path="/api/users/{id}/action",
      *     summary="Like or dislike a user",
      *     tags={"Users"},
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="action", type="string", enum={"like", "dislike"})
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Successful operation")
+     *     @OA\Parameter(name="action", in="query", required=true, @OA\Schema(type="string", enum={"like", "dislike"})),
+     *     @OA\Response(response=200, description="Successful operation"),
+     *     @OA\Response(response=400, description="Invalid action specified"),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=404, description="User not found"),
+     *     @OA\Response(response=422, description="Cannot perform action on yourself")
      * )
      */
     public function userAction(Request $request, $id)
