@@ -114,6 +114,7 @@ class UserController extends Controller
      *             @OA\Property(property="name", type="string", example="John Doe"),
      *             @OA\Property(property="bio", type="string", example="I am a software engineer."),
      *             @OA\Property(property="location", type="string", example="New York, USA"),
+     *             @OA\Property(property="age", type="integer", example=25),
      *             @OA\Property(property="birth_date", type="string", format="date", example="1990-01-01")
      *         )
      *     ),
@@ -132,6 +133,7 @@ class UserController extends Controller
             'name' => 'sometimes|string|max:255',
             'bio' => 'sometimes|string',
             'location' => 'sometimes|string|max:255',
+            'age' => 'sometimes|integer',
             'birth_date' => 'sometimes|date',
         ]);
 

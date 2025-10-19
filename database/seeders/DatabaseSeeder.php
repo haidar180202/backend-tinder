@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
                 User::factory(12)->create()->each(function ($user) {
             $user->profile()->create([
                 'name' => $user->name,
+                'location' => 'Test',
+                'age' => 20,
             ]);
         });
 

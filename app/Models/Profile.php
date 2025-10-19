@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  *     @OA\Property(property="name", type="string", example="John Doe"),
  *     @OA\Property(property="bio", type="string", example="I am a software engineer."),
  *     @OA\Property(property="location", type="string", example="New York, USA"),
+ *     @OA\Property(property="age", type="integer", example=25),
  *     @OA\Property(property="birth_date", type="string", format="date", example="1990-01-01"),
  *     @OA\Property(property="profile_picture_url", type="string", format="url", example="http://localhost/storage/profile_pictures/picture.jpg"),
  *     @OA\Property(property="created_at", type="string", format="date-time", readOnly=true),
@@ -28,6 +29,7 @@ class Profile extends Model
         'name',
         'bio',
         'location',
+        'age',
         'birth_date',
         'profile_picture_url',
     ];
