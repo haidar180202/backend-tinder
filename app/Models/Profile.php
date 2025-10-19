@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  *     @OA\Property(property="bio", type="string", example="I am a software engineer."),
  *     @OA\Property(property="location", type="string", example="New York, USA"),
  *     @OA\Property(property="birth_date", type="string", format="date", example="1990-01-01"),
- *     @OA\Property(property="profile_picture", type="string", format="url", example="http://localhost/storage/profile_pictures/picture.jpg"),
+ *     @OA\Property(property="profile_picture_url", type="string", format="url", example="http://localhost/storage/profile_pictures/picture.jpg"),
  *     @OA\Property(property="created_at", type="string", format="date-time", readOnly=true),
  *     @OA\Property(property="updated_at", type="string", format="date-time", readOnly=true)
  * )
@@ -29,7 +29,7 @@ class Profile extends Model
         'bio',
         'location',
         'birth_date',
-        'profile_picture',
+        'profile_picture_url',
     ];
 
     public function user()
@@ -37,7 +37,7 @@ class Profile extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getProfilePictureAttribute($value)
+    public function getProfilePictureUrlAttribute($value)
     {
         if (filter_var($value, FILTER_VALIDATE_URL)) {
             return $value;

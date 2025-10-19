@@ -41,7 +41,7 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
@@ -51,6 +51,11 @@ class AuthController extends Controller
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
+        ]);
+
+        // Membuat profil kosong untuk pengguna baru
+        $user->profile()->create([
+            'name' => $validatedData['name'],
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;

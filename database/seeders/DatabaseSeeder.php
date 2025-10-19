@@ -13,7 +13,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(10)->create();
+                User::factory(12)->create()->each(function ($user) {
+            $user->profile()->create([
+                'name' => $user->name,
+            ]);
+        });
 
         $this->call([
             UserPictureSeeder::class,
