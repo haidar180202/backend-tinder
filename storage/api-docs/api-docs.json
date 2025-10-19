@@ -256,6 +256,10 @@
                                         "type": "string",
                                         "example": "New York, USA"
                                     },
+                                    "age": {
+                                        "type": "integer",
+                                        "example": 25
+                                    },
                                     "birth_date": {
                                         "type": "string",
                                         "format": "date",
@@ -500,12 +504,16 @@
                         "type": "string",
                         "example": "New York, USA"
                     },
+                    "age": {
+                        "type": "integer",
+                        "example": 25
+                    },
                     "birth_date": {
                         "type": "string",
                         "format": "date",
                         "example": "1990-01-01"
                     },
-                    "profile_picture": {
+                    "profile_picture_url": {
                         "type": "string",
                         "format": "url",
                         "example": "http://localhost/storage/profile_pictures/picture.jpg"
