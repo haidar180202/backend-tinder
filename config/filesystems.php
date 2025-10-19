@@ -68,6 +68,7 @@ return [
             'path_prefix' => env('GOOGLE_CLOUD_STORAGE_PATH_PREFIX', null), // optional: /default/path/to/apply/in/bucket
             'storage_api_uri' => env('GOOGLE_CLOUD_STORAGE_API_URI', null), // see GCS docs
             'visibility' => 'public', // optional: public|private
+            'url' => 'https://storage.googleapis.com/' . env('GOOGLE_CLOUD_STORAGE_BUCKET'),
             'throw' => false,
             'report' => false,
         ],

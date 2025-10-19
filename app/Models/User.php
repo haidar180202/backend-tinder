@@ -61,9 +61,14 @@ class User extends Authenticatable
         ];
     }
 
-    public function profile(): HasOne
+    public function profile()
     {
         return $this->hasOne(Profile::class);
+    }
+
+    public function pictures()
+    {
+        return $this->hasMany(UserPicture::class);
     }
 
     public function likes(): HasMany
@@ -79,10 +84,5 @@ class User extends Authenticatable
     public function likesReceived(): HasMany
     {
         return $this->hasMany(Like::class, 'liked_user_id');
-    }
-
-    public function pictures(): HasMany
-    {
-        return $this->hasMany(UserPicture::class);
     }
 }

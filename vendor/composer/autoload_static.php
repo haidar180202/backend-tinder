@@ -698,9 +698,11 @@ class ComposerStaticInit212a4c3a955258e4cacca97fa41d59aa
 
     public static $classMap = array (
         'App\\Console\\Commands\\NotifyAdminOfPopularUsers' => __DIR__ . '/../..' . '/app/Console/Commands/NotifyAdminOfPopularUsers.php',
+        'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Http\\Controllers\\Api\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/AuthController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\UserController' => __DIR__ . '/../..' . '/app/Http/Controllers/UserController.php',
+        'App\\Mail\\PopularUser' => __DIR__ . '/../..' . '/app/Mail/PopularUser.php',
         'App\\Models\\Dislike' => __DIR__ . '/../..' . '/app/Models/Dislike.php',
         'App\\Models\\Like' => __DIR__ . '/../..' . '/app/Models/Like.php',
         'App\\Models\\Profile' => __DIR__ . '/../..' . '/app/Models/Profile.php',
@@ -827,6 +829,7 @@ class ComposerStaticInit212a4c3a955258e4cacca97fa41d59aa
         'Cron\\MonthField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/MonthField.php',
         'Database\\Factories\\UserFactory' => __DIR__ . '/../..' . '/database/factories/UserFactory.php',
         'Database\\Seeders\\DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeders/DatabaseSeeder.php',
+        'Database\\Seeders\\UserPictureSeeder' => __DIR__ . '/../..' . '/database/seeders/UserPictureSeeder.php',
         'DateError' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateError.php',
         'DateException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateException.php',
         'DateInvalidOperationException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateInvalidOperationException.php',

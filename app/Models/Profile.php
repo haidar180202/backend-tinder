@@ -36,4 +36,16 @@ class Profile extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getProfilePictureAttribute($value)
+    {
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            return $value;
+        }
+        if ($value) {
+            $bucket = config('filesystems.disks.gcs.bucket');
+            return 'https://storage.googleapis.com/' . $bucket . '/' . $value;
+        }
+        return null;
+    }
 }

@@ -6,6 +6,81 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/register": {
+            "post": {
+                "summary": "Register a new user",
+                "operationId": "8e4e3cb7b46126f4696379d3c7eeb4ad",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully"
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "summary": "Login a user",
+                "operationId": "222b2625838e3c57e017987f73598fda",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User logged in successfully"
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "summary": "Logout a user",
+                "operationId": "ad65cbbd4e9f201619eae184a5961a98",
+                "responses": {
+                    "200": {
+                        "description": "User logged out successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/users/recommended": {
             "get": {
                 "tags": [
@@ -259,7 +334,7 @@
                     "Profile"
                 ],
                 "summary": "Upload additional picture",
-                "operationId": "e64c7de8d4698187416171dc9937817a",
+                "operationId": "6f16dd2ac0bcb772e7ac735a9d3f36bd",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -286,6 +361,108 @@
                                 }
                             }
                         }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/pictures/{picture}": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get a specific additional picture by ID",
+                "operationId": "6015a48a3c38aeba61ced663f1d6fefa",
+                "parameters": [
+                    {
+                        "name": "picture",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserPicture"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - User does not own this picture"
+                    },
+                    "404": {
+                        "description": "Picture not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update a specific additional picture by ID",
+                "operationId": "07911e6b2a99e4afb18d798b299bd423",
+                "parameters": [
+                    {
+                        "name": "picture",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "picture": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserPicture"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - User does not own this picture"
+                    },
+                    "404": {
+                        "description": "Picture not found"
                     }
                 },
                 "security": [

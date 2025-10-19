@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserPicture;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -178,12 +179,20 @@ class UserController extends Controller
         $profile = $user->profile()->firstOrCreate(['user_id' => $user->id]);
 
         if ($request->hasFile('picture')) {
-            $path = $request->file('picture')->store('public/profile_pictures');
-            $profile->profile_picture = Storage::url($path);
+            // Store the file in GCS with public visibility and get the path.
+            $path = Storage::disk('gcs')->putFile('profile_pictures', $request->file('picture'), 'public');
+            
+            // Manually construct the public URL.
+            $bucket = config('filesystems.disks.gcs.bucket');
+            $url = 'https://storage.googleapis.com/' . $bucket . '/' . $path;
+            
+            // Save the full URL to the database.
+            $profile->profile_picture = $url;
             $profile->save();
         }
 
-        return response()->json($profile);
+        // Return the fresh profile data.
+        return response()->json($profile->fresh());
     }
 
     /**
@@ -212,7 +221,7 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function uploadPicture(Request $request)
+    public function uploadAdditionalPicture(Request $request)
     {
         $request->validate([
             'picture' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -220,14 +229,123 @@ class UserController extends Controller
 
         $user = $request->user();
 
-        if ($request->hasFile('picture')) {
-            $path = $request->file('picture')->store('public/user_pictures');
-            $picture = $user->pictures()->create([
-                'picture_url' => Storage::url($path),
-            ]);
+        // Limit the number of additional pictures to 5.
+        if ($user->pictures()->count() >= 5) {
+            return response()->json(['message' => 'You have reached the maximum number of pictures.'], 400);
+        }
+
+        // Sanitize email to use as a directory name.
+        $email_as_path = str_replace('@', '_at_', $user->email);
+        $directory = 'additional_pictures/' . $email_as_path;
+
+        // Store the file in GCS with public visibility.
+        $path = Storage::disk('gcs')->putFile($directory, $request->file('picture'), 'public');
+
+        // Manually construct the public URL.
+        $bucket = config('filesystems.disks.gcs.bucket');
+        $url = 'https://storage.googleapis.com/' . $bucket . '/' . $path;
+
+        // Create a new UserPicture record.
+        $userPicture = $user->pictures()->create([
+            'picture_url' => $url,
+        ]);
+
+        return response()->json($userPicture);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/pictures/{picture}",
+     *     summary="Get a specific additional picture by ID",
+     *     tags={"Profile"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(name="picture", in="path", required=true, @OA\Schema(type="integer", format="int64", example=1)),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/UserPicture")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden - User does not own this picture"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Picture not found"
+     *     )
+     * )
+     */
+    public function getPicture(Request $request, UserPicture $picture)
+    {
+        // Ensure the user owns the picture
+        if ($request->user()->id !== $picture->user_id) {
+            return response()->json(['message' => 'Forbidden'], 403);
         }
 
         return response()->json($picture);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/pictures/{picture}",
+     *     summary="Update a specific additional picture by ID",
+     *     tags={"Profile"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(name="picture", in="path", required=true, @OA\Schema(type="integer", format="int64", example=1)),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="picture",
+     *                     type="string",
+     *                     format="binary"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/UserPicture")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden - User does not own this picture"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Picture not found"
+     *     )
+     * )
+     */
+    public function updatePicture(Request $request, UserPicture $picture)
+    {
+        $request->validate([
+            'picture' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        // Ensure the user owns the picture
+        if ($request->user()->id !== $picture->user_id) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        // Delete the old file from GCS.
+        $old_path = str_replace('https://storage.googleapis.com/' . config('filesystems.disks.gcs.bucket') . '/', '', $picture->picture_url);
+        Storage::disk('gcs')->delete($old_path);
+
+        // Store the new file.
+        $user = $request->user();
+        $email_as_path = str_replace('@', '_at_', $user->email);
+        $directory = 'additional_pictures/' . $email_as_path;
+        $path = Storage::disk('gcs')->putFile($directory, $request->file('picture'), 'public');
+        $url = 'https://storage.googleapis.com/' . config('filesystems.disks.gcs.bucket') . '/' . $path;
+
+        // Update the picture record.
+        $picture->update(['picture_url' => $url]);
+
+        return response()->json($picture->fresh());
     }
 
     /**

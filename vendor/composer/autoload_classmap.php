@@ -7,9 +7,11 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'App\\Console\\Commands\\NotifyAdminOfPopularUsers' => $baseDir . '/app/Console/Commands/NotifyAdminOfPopularUsers.php',
+    'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Http\\Controllers\\Api\\AuthController' => $baseDir . '/app/Http/Controllers/Api/AuthController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\UserController' => $baseDir . '/app/Http/Controllers/UserController.php',
+    'App\\Mail\\PopularUser' => $baseDir . '/app/Mail/PopularUser.php',
     'App\\Models\\Dislike' => $baseDir . '/app/Models/Dislike.php',
     'App\\Models\\Like' => $baseDir . '/app/Models/Like.php',
     'App\\Models\\Profile' => $baseDir . '/app/Models/Profile.php',
@@ -136,6 +138,7 @@ return array(
     'Cron\\MonthField' => $vendorDir . '/dragonmantank/cron-expression/src/Cron/MonthField.php',
     'Database\\Factories\\UserFactory' => $baseDir . '/database/factories/UserFactory.php',
     'Database\\Seeders\\DatabaseSeeder' => $baseDir . '/database/seeders/DatabaseSeeder.php',
+    'Database\\Seeders\\UserPictureSeeder' => $baseDir . '/database/seeders/UserPictureSeeder.php',
     'DateError' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateError.php',
     'DateException' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateException.php',
     'DateInvalidOperationException' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateInvalidOperationException.php',
