@@ -93,6 +93,61 @@ Performs a `like` or `dislike` action on a user.
     }
     ```
 
+### 3. Profile & Picture Management
+
+#### **POST** `/api/profile/picture`
+
+_Authentication required._
+
+Uploads or updates the main profile picture for the authenticated user.
+
+-   **Request Body** (form-data):
+    -   `picture` (file, required): The image file to upload.
+
+-   **Success Response (200)**:
+    ```json
+    {
+        "message": "Profile picture updated successfully",
+        "picture_url": "http://..."
+    }
+    ```
+
+#### **POST** `/api/pictures`
+
+_Authentication required._
+
+Uploads an additional picture to the user's gallery.
+
+-   **Request Body** (form-data):
+    -   `picture` (file, required): The image file to upload.
+
+-   **Success Response (201)**:
+    ```json
+    {
+        "message": "Picture uploaded successfully",
+        "picture": {
+            "id": 1,
+            "url": "http://..."
+        }
+    }
+    ```
+
+#### **DELETE** `/api/pictures/{id}`
+
+_Authentication required._
+
+Deletes an additional picture from the user's gallery.
+
+-   **URL Parameters**:
+    -   `id` (integer, required): The ID of the picture to delete.
+
+-   **Success Response (200)**:
+    ```json
+    {
+        "message": "Picture deleted successfully"
+    }
+    ```
+
 ---
 
 *This documentation should be kept in sync with any API changes.*

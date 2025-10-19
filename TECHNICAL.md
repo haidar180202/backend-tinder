@@ -29,16 +29,17 @@ This document provides a detailed explanation of the internal architecture, core
 -   When a user performs a `like` or `dislike` action via `/api/users/{id}/action`, a new record is created in the `likes` or `dislikes` table, respectively.
 -   This action prevents the swiped user from appearing in the authenticated user's recommendations again.
 
-### 2.4. Image Upload to Google Cloud Storage
+### 2.4. Image Management Workflow
 
--   The `UserPictureSeeder` demonstrates how to upload files to GCS.
--   It uses `Storage::disk('gcs')->put($path, $contents)` to store the file.
--   The public URL is then retrieved using `Storage::disk('gcs')->url($path)` and saved to the `user_pictures` table.
+-   **Main Profile Picture**: Users can upload a main profile picture via the `POST /api/profile/picture` endpoint. This action updates the `picture_url` on the user's main `profile`.
+-   **Additional Pictures**: Users can upload additional pictures to their gallery using `POST /api/pictures`. Each picture is stored as a separate record in the `user_pictures` table.
+-   **Viewing and Deleting**: Individual pictures can be retrieved (`GET /api/pictures/{id}`) or deleted (`DELETE /api/pictures/{id}`).
+-   **Storage**: All images are uploaded to Google Cloud Storage to ensure high availability and performance. The application uses Laravel's Filesystem abstraction layer, making it easy to switch to other storage providers if needed.
 
 ## 3. Database Schema
 
 -   **`users`**: Stores user information (name, email, password).
--   **`profiles`**: Contains additional user profile details.
+-   **`profiles`**: Contains additional user profile details, including the URL for the main profile picture (`picture_url`).
 -   **`user_pictures`**: Stores URLs to user images on GCS, linked to the `users` table.
 -   **`likes`**: Records a `like` action from one user to another.
 -   **`dislikes`**: Records a `dislike` action.

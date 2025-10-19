@@ -26,8 +26,8 @@ This repository contains the backend service for a Tinder-clone application. Bui
 - **Secure User Authentication**: JWT-based authentication using Laravel Sanctum for secure user registration and login.
 - **Advanced User Recommendations**: A sophisticated recommendation engine to suggest potential matches based on user data and preferences.
 - **Swiping Mechanics**: Core like/dislike functionality to enable user interaction.
-- **Profile Management**: Endpoints for users to create, update, and manage their profiles.
-- **Cloud-Based Image Uploads**: Seamlessly handles profile picture uploads to Google Cloud Storage, ensuring scalability and performance.
+- **Rich Profile Management**: Endpoints for users to create and update their profiles, including a main profile picture and a gallery of additional pictures.
+- **Cloud-Based Image Uploads**: Seamlessly handles image uploads to Google Cloud Storage, ensuring scalability and performance for all user pictures.
 - **Database Seeding**: Includes comprehensive seeders to populate the database with dummy users and profile pictures for easy testing and development.
 - **Structured API**: A clean, well-documented, and RESTful API design.
 
@@ -86,12 +86,13 @@ For detailed information about all available API endpoints, request parameters, 
         ```
 
 5.  **Google Cloud Storage Setup:**
-    -   Place your Google Cloud service account JSON key file in a secure location.
+    -   Place your Google Cloud service account JSON key file in the root of the project directory and name it `google-credentials.json`.
+    -   **Important**: Ensure this file is listed in your `.gitignore` file to prevent it from being committed to version control.
     -   Update the `.env` file with your GCS credentials:
         ```env
         FILESYSTEM_DISK=gcs
         GOOGLE_CLOUD_PROJECT_ID=your-gcp-project-id
-        GOOGLE_CLOUD_KEY_FILE=/path/to/your/credentials.json
+        GOOGLE_CLOUD_KEY_FILE=${PWD}/google-credentials.json
         GOOGLE_CLOUD_STORAGE_BUCKET=your-gcs-bucket-name
         ```
 
@@ -113,6 +114,10 @@ A summary of the primary endpoints is listed below. For full details, see the [A
 | POST   | `/api/login`            | Log in a user and receive a token.   |
 | GET    | `/api/users/recommended`| Get a list of recommended users.     |
 | GET    | `/api/users/{id}/action`| Like or dislike a user.              |
+| POST   | `/api/profile/picture`  | Upload a main profile picture.       |
+| POST   | `/api/pictures`         | Upload an additional picture.        |
+| GET    | `/api/pictures/{id}`    | Get a specific additional picture.   |
+| DELETE | `/api/pictures/{id}`    | Delete an additional picture.        |
 
 ## Contributing
 
