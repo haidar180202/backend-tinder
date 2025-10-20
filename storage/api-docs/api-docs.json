@@ -241,7 +241,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "properties": {
                                     "name": {
@@ -256,53 +256,11 @@
                                         "type": "string",
                                         "example": "New York, USA"
                                     },
-                                    "age": {
-                                        "type": "integer",
-                                        "example": 25
-                                    },
                                     "birth_date": {
                                         "type": "string",
                                         "format": "date",
                                         "example": "1990-01-01"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Profile"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/profile/picture": {
-            "post": {
-                "tags": [
-                    "Profile"
-                ],
-                "summary": "Upload profile picture",
-                "operationId": "ab9d3f1e40c05f5d6897f0e4ac634995",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "properties": {
+                                    },
                                     "picture": {
                                         "type": "string",
                                         "format": "binary"
@@ -458,6 +416,54 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/UserPicture"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - User does not own this picture"
+                    },
+                    "404": {
+                        "description": "Picture not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Delete a specific additional picture by ID",
+                "operationId": "0f1fc03fae2b79657992566d7d749e1d",
+                "parameters": [
+                    {
+                        "name": "picture",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Picture deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }

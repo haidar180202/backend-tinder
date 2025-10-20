@@ -109,13 +109,16 @@ class UserController extends Controller
      *     security={{"sanctum":{}}},
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="name", type="string", example="John Doe"),
-     *             @OA\Property(property="bio", type="string", example="I am a software engineer."),
-     *             @OA\Property(property="location", type="string", example="New York, USA"),
-     *             @OA\Property(property="age", type="integer", example=25),
-     *             @OA\Property(property="birth_date", type="string", format="date", example="1990-01-01")
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 @OA\Property(property="name", type="string", example="John Doe"),
+     *                 @OA\Property(property="bio", type="string", example="I am a software engineer."),
+     *                 @OA\Property(property="location", type="string", example="New York, USA"),
+     *                 @OA\Property(property="birth_date", type="string", format="date", example="1990-01-01"),
+     *                 @OA\Property(property="picture", type="string", format="binary")
+     *             )
      *         )
      *     ),
      *     @OA\Response(
@@ -133,69 +136,27 @@ class UserController extends Controller
             'name' => 'sometimes|string|max:255',
             'bio' => 'sometimes|string',
             'location' => 'sometimes|string|max:255',
-            'age' => 'sometimes|integer',
             'birth_date' => 'sometimes|date',
+            'age' => 'sometimes|integer',
+            'picture' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $profile = $user->profile()->updateOrCreate(
-            ['user_id' => $user->id],
-            $validatedData
-        );
+        $profile = $user->profile()->firstOrCreate(['user_id' => $user->id]);
+
+        if ($request->hasFile('picture')) {
+            $path = Storage::disk('gcs')->putFile('profile_pictures', $request->file('picture'), 'public');
+            $bucket = config('filesystems.disks.gcs.bucket');
+            $url = 'https://storage.googleapis.com/' . $bucket . '/' . $path;
+            $validatedData['profile_picture_url'] = $url;
+            unset($validatedData['picture']);
+        }
+
+        $profile->update($validatedData);
 
         return response()->json($profile);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/profile/picture",
-     *     summary="Upload profile picture",
-     *     tags={"Profile"},
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 @OA\Property(
-     *                     property="picture",
-     *                     type="string",
-     *                     format="binary"
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(ref="#/components/schemas/Profile")
-     *     )
-     * )
-     */
-    public function uploadProfilePicture(Request $request)
-    {
-        $request->validate([
-            'picture' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
 
-        $user = $request->user();
-        $profile = $user->profile()->firstOrCreate(['user_id' => $user->id]);
-
-        if ($request->hasFile('picture')) {
-            // Store the file in GCS with public visibility and get the path.
-            $path = Storage::disk('gcs')->putFile('profile_pictures', $request->file('picture'), 'public');
-            
-            // Manually construct the public URL.
-            $bucket = config('filesystems.disks.gcs.bucket');
-            $url = 'https://storage.googleapis.com/' . $bucket . '/' . $path;
-            
-            // Save the full URL to the database.
-            $profile->profile_picture = $url;
-            $profile->save();
-        }
-
-        // Return the fresh profile data.
-        return response()->json($profile->fresh());
-    }
 
     /**
      * @OA\Post(
@@ -348,6 +309,45 @@ class UserController extends Controller
         $picture->update(['picture_url' => $url]);
 
         return response()->json($picture->fresh());
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/pictures/{picture}",
+     *     summary="Delete a specific additional picture by ID",
+     *     tags={"Profile"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(name="picture", in="path", required=true, @OA\Schema(type="integer", format="int64", example=1)),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(type="object", @OA\Property(property="message", type="string", example="Picture deleted successfully"))
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden - User does not own this picture"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Picture not found"
+     *     )
+     * )
+     */
+    public function deletePicture(Request $request, UserPicture $picture)
+    {
+        // Ensure the user owns the picture
+        if ($request->user()->id !== $picture->user_id) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        // Delete the file from GCS.
+        $old_path = str_replace('https://storage.googleapis.com/' . config('filesystems.disks.gcs.bucket') . '/', '', $picture->picture_url);
+        Storage::disk('gcs')->delete($old_path);
+
+        // Delete the picture record.
+        $picture->delete();
+
+        return response()->json(['message' => 'Picture deleted successfully']);
     }
 
     /**
